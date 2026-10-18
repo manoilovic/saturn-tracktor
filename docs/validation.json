@@ -1,0 +1,164 @@
+{
+  "date": "2026-10-18",
+  "platform": "Windows 11 x64 build 26300",
+  "dsp": {
+    "utc": "2026-10-18T13:39:40.0615514Z",
+    "platform": "Microsoft Windows NT 10.0.26300.0",
+    "failed": 0,
+    "tests": [
+      {
+        "name": "Unity signal transparency",
+        "passed": true,
+        "detail": 0.0035355339219016917
+      },
+      {
+        "name": "Master gain 6 dB",
+        "passed": true,
+        "detail": {
+          "measured": 5.99999985204776,
+          "percent": 99.52623149688795
+        }
+      },
+      {
+        "name": "Master gain 20 dB",
+        "passed": true,
+        "detail": {
+          "measured": 19.999999789964843,
+          "percent": 900
+        }
+      },
+      {
+        "name": "All 31 EQ band center gains",
+        "passed": true,
+        "detail": {
+          "maxErrorDb": 1.2395998444603151E-05,
+          "bands": 31
+        }
+      },
+      {
+        "name": "Channel balance endpoints",
+        "passed": true,
+        "detail": {
+          "rightAtLeft": 0,
+          "leftAtRight": 0
+        }
+      },
+      {
+        "name": "Limiter and finite output under maximum gain",
+        "passed": true,
+        "detail": 0.970538
+      },
+      {
+        "name": "Clarity high shelf",
+        "passed": true,
+        "detail": 1.7506027456388307
+      },
+      {
+        "name": "Bass low shelf",
+        "passed": true,
+        "detail": 2.4670219894605867
+      },
+      {
+        "name": "Dynamics compressor",
+        "passed": true,
+        "detail": 0.2814727535732788
+      },
+      {
+        "name": "Ambience delayed stereo reflections",
+        "passed": true,
+        "detail": "different L/R delay paths"
+      },
+      {
+        "name": "Profile snapshot remains immutable",
+        "passed": true,
+        "detail": "Deep copies preserve selected preset"
+      },
+      {
+        "name": "Realtime DSP throughput",
+        "passed": true,
+        "detail": {
+          "audioSeconds": 10,
+          "computeSeconds": 0.0872332
+        }
+      }
+    ]
+  },
+  "ui": {
+    "results": [
+      {
+        "name": "All bands and circular knobs",
+        "passed": true
+      },
+      {
+        "name": "No separate Save button",
+        "passed": true
+      },
+      {
+        "name": "Distinct Music preset",
+        "passed": true
+      },
+      {
+        "name": "Reset restores every regulator from profile",
+        "passed": true
+      },
+      {
+        "name": "Reset preserves theme and device",
+        "passed": true
+      },
+      {
+        "name": "EQ group shifts by 1 dB and clamps",
+        "passed": true
+      },
+      {
+        "name": "Compact gain converts 20 dB to 900 percent",
+        "passed": true
+      },
+      {
+        "name": "Slider fill follows value",
+        "passed": true
+      },
+      {
+        "name": "Custom preset creation through profile menu",
+        "passed": true
+      },
+      {
+        "name": "Custom preset resets to saved gain",
+        "passed": true
+      },
+      {
+        "name": "Compact view contains one visible slider",
+        "passed": true
+      }
+    ],
+    "geometry": "{\"bands\":31,\"bodyWidth\":1600,\"driver\":true,\"ready\":true,\"viewWidth\":1600}",
+    "compactGeometry": "{\"bodyWidth\":600,\"contentBottom\":152,\"height\":180,\"width\":600}"
+  },
+  "systemAudio": {
+    "passed": true,
+    "utc": "2026-10-18T13:39:46.2867252Z",
+    "virtualDevice": "Динамики (Saturn Audio Enhancer)",
+    "physicalDevice": "Наушники (ATVEL Tune Pro Q7)",
+    "sampleRate": 48000,
+    "inputPeak": 0.0005000000237487257,
+    "processedPeak": 0.0009976312048693451,
+    "physicalLoopbackPeak": 0.0009976312285289168,
+    "idleRenderStopped": true,
+    "defaultsRestored": true,
+    "error": null
+  },
+  "machineInstallation": {
+    "desktopAndStartMenuShortcuts": true,
+    "settingsPreserved": true,
+    "registeredForAllUsers": true,
+    "displayName": "Saturn Tracktor",
+    "version": "1.0.2",
+    "location": "Program Files/SaturnTracktor",
+    "publisher": "Gevork Saturn",
+    "testUninstallPassed": true
+  },
+  "limits": [
+    "Fresh-machine driver and WebView2 installation not separately tested",
+    "Windows screensaver timer not observed in a separate long-duration test",
+    "Other hardware, Windows 10, ARM64, ASIO and exclusive WASAPI not validated"
+  ]
+}
