@@ -1,0 +1,33 @@
+Saturn Tracktor 1.0.0
+Gevork Saturn
+
+Saturn Tracktor includes its own UI and managed DSP implementation.
+It uses NAudio 2.2.1 (MIT) and Microsoft WebView2 SDK 1.0.4258.31
+(Microsoft redistribution license). See bundled license texts.
+
+The unchanged FxSound virtual audio driver 14.1.0.0 and fxdevcon helper
+are distributed as independent third-party components. The friendly endpoint
+name is changed through Windows audio properties to Saturn Audio Enhancer;
+the signed driver package, vendor identity and certificates are not modified.
+
+Driver package and helper were extracted from the signed official installer:
+https://download.fxsound.com/fxsoundlatest
+FxSound application source (including fxdevcon installer helper):
+https://github.com/fxsound2/fxsound-app/tree/d8e7a23d37ed5939c2a3090a1c1756c7f2500b17
+FxSound virtual driver source:
+https://github.com/fxsound2/fxsound-driver
+FxSound licenses: AGPL-3.0 and the included Microsoft driver sample license.
+Corresponding driver source and installer helper source are included in
+SaturnTracktor-source.zip supplied alongside this executable.
+
+NAudio source:
+https://github.com/naudio/NAudio/tree/v2.2.1
+NAudio license: NAudio-MIT.txt
+WebView2 license: WebView2-LICENSE.txt
+FxSound licenses: FxSound-AGPL-3.0.txt; FxSound-driver-license.rtf
+
+Unmodified packaged x64 driver file SHA-256:
+fxvad.inf BA175CFDDD91B87BDDA3F1DF2A70249E1742E846B843381EB0438B70F91A110A
+fxvad.sys 425629B6309000013E8CD1A9B827BEE365D21C9F743873AADD0C3BC96A999D2A
+fxvadntamd64.cat 25C8DAE186155D20F74FEEDEFB4F84161E4215925B8FD0C898F68F3E50EBCD7D
+fxdevcon64.exe CA83823A9A29AD6FCB3507FBC48A3F11B63DEA593214C924420A30D0089A9A57

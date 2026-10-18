@@ -1,0 +1,89 @@
+name: Build Windows installer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'SaturnTracktor/**'
+      - 'ThirdParty/**'
+      - 'installer/**'
+      - '.github/workflows/release.yml'
+      - 'BUILD.md'
+      - 'README.md'
+      - 'LICENSE'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Check out the requested public source revision
+        run: |
+          git clone --filter=blob:none --no-checkout "https://github.com/$env:GITHUB_REPOSITORY.git" .
+          if ($LASTEXITCODE -ne 0) { throw 'Clone failed.' }
+          git -c core.autocrlf=false checkout $env:GITHUB_SHA
+          if ($LASTEXITCODE -ne 0) { throw 'Checkout failed.' }
+
+      - name: Prepare .NET SDK 8.0.426
+        run: |
+          $sdkDirectory = Join-Path $env:RUNNER_TEMP 'saturn-dotnet'
+          $sdkScript = Join-Path $env:RUNNER_TEMP 'saturn-dotnet-install.ps1'
+          Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile $sdkScript
+          & $sdkScript -Version 8.0.426 -InstallDir $sdkDirectory
+          $sdkDirectory | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          "DOTNET_ROOT=$sdkDirectory" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Prepare verified Inno Setup 6.7.3
+        run: |
+          $compilerSetup = Join-Path $env:RUNNER_TEMP 'saturn-inno-setup.exe'
+          $compilerDirectory = Join-Path $env:RUNNER_TEMP 'saturn-inno'
+          Invoke-WebRequest 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $compilerSetup
+          $signature = Get-AuthenticodeSignature -LiteralPath $compilerSetup
+          if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notmatch 'O=Pyrsys B.V.') { throw 'Invalid compiler signature.' }
+          $setup = Start-Process $compilerSetup -ArgumentList @('/SP-','/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART','/CURRENTUSER','/NOICONS',('/DIR="' + $compilerDirectory + '"')) -WindowStyle Hidden -Wait -PassThru
+          if ($setup.ExitCode -ne 0) { throw 'Compiler setup failed.' }
+          "SATURN_ISCC=$compilerDirectory\ISCC.exe" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Build app, corresponding source, licenses, and installer
+        run: ./installer/Build-Installer.ps1 -Iscc $env:SATURN_ISCC
+
+      - name: Run offline DSP checks
+        run: |
+          $report = Join-Path (Get-Location) 'artifacts/SaturnTracktor-DSP-tests.json'
+          $check = Start-Process 'build/publish/SaturnTracktor.exe' -ArgumentList @('--self-test',('"' + $report + '"')) -WindowStyle Hidden -Wait -PassThru
+          if ($check.ExitCode -ne 0) { throw 'DSP validation failed.' }
+
+      - name: Publish the verified installer and source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $project = [xml](Get-Content 'SaturnTracktor/SaturnTracktor.csproj' -Raw)
+          $version = [string]$project.Project.PropertyGroup.Version
+          $tag = 'v' + $version
+          $repository = $env:GITHUB_REPOSITORY
+          $existing = gh release view $tag --repo $repository --json isDraft 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            if (-not ($existing | ConvertFrom-Json).isDraft) {
+              Write-Output 'This version is already published. Increment the version for a new release.'
+              exit 0
+            }
+          } else {
+            gh release create $tag --repo $repository --target $env:GITHUB_SHA --title "Saturn Tracktor $version" --notes-file 'docs/RELEASE.md' --draft
+            if ($LASTEXITCODE -ne 0) { throw 'Release creation failed.' }
+          }
+          $assets = Get-ChildItem 'artifacts' -File | Select-Object -ExpandProperty FullName
+          gh release upload $tag @assets --repo $repository --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Asset upload failed.' }
+          gh release edit $tag --repo $repository --draft=false --latest
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed.' }
